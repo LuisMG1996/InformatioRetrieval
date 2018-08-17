@@ -13,11 +13,16 @@ public class TextFile {
     File txtFile;
 
     public TextFile(String path, String nameFile){
+        this.path = path;
+        this.nameFile = nameFile;
         try {
             txtFile = new File(path);
             BufferedReader br = new BufferedReader(new FileReader(txtFile));
         }catch (Exception e){
             System.out.println("Error loading file: " + e);
         }
+    }
+    public TextFile(String name){
+        this.nameFile = name;
     }
 }
