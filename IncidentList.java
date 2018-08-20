@@ -1,18 +1,18 @@
-package com.company;
-
 import java.util.LinkedList;
 
 /**
  * Created by luisricardo on 17/08/2018.
  */
-public class IncidentList extends LinkedList<TextFile> {
+public class IncidentList extends LinkedList<Integer> {
 
-    String listName;
-    public IncidentList(String listName){
-        this.listName = listName;
-    }
+    public void agregarCoincidencia(int index)
+    {
+        this.add(index,1);
+    }//Fin metodo agregar coincidencia
 
-    public void addFile(TextFile file){
-        add(file);
-    }
-}
+    public void agregarAusencia(int index)
+    {
+        this.add(index,0);
+    }//Fin metodo agregar ausencia
+
+}//Fin Clase IncidentList
