@@ -13,6 +13,6 @@ public class IncidentList extends LinkedList<Integer> {
     public void agregarAusencia(int index)
     {
         this.add(index,0);
-    }//Fin metodo agregar ausencia
+    }//Fin metodo agregar ausencia.
 
 }//Fin Clase IncidentList

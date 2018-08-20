@@ -13,7 +13,7 @@ public class Search
     LinkedList<String> palabrasOpcionales;
     LinkedList<String> textoDescompuesto;
 
-    //IncidentList de  Palabras para este archivo
+    //IncidentList de  Palabras para este archivo.
     //IncidentList inlistBuscadas;
     //IncidentList inlistDescartar;
 

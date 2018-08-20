@@ -63,7 +63,7 @@ public class TextFile
     //--------------------------------------------------------------------
     //Metodo que lee solo una linea. Aqui no se abre ni se cierra el archivo ya que para
     //que la lectura pueda ser CONTINUAMENTE (linea X linea), el archivo se abre de forma global
-    //llamando al metodo Abrir() antes de este metodo
+    //llamando al metodo Abrir() antes de este metodo.
     public String Leer()
     {
         String linea;
