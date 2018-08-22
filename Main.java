@@ -11,28 +11,30 @@ public class Main
         LinkedList<String> palabrasAIncluir;
         LinkedList<String> palabrasAEvitar;
         LinkedList<String> palabrasOpcionales;
+
+        LinkedList<String> totalPalabras;
         int palabrasABuscar;
 
-        //Array de IncidentLists
-        IncidentList inlistsBuscadas[];
-        IncidentList inlistsEvitadas[];
+        //InvertedIndex = Lista de IncidentLists y palabras
+        InvertedIndex invtIndx;
 
         //Archivo uno
         TextFile archivoUno;
         Search buscadorArchivoUno;
 
         //Archivo Dos
+        TextFile archivoDos;
+        Search buscadorArchivoDos;
 
         //---Datos de entrada
         palabrasAIncluir = new LinkedList<String>();
         palabrasAEvitar = new LinkedList<String>();
         palabrasOpcionales = new LinkedList<String>();
+
+        totalPalabras = new LinkedList<String>();
         palabrasABuscar = 0;
 
         menu(palabrasAIncluir,palabrasAEvitar,palabrasOpcionales);
-
-        archivoUno = new TextFile("archivoUno.txt",System.getProperty("user.dir"));
-        buscadorArchivoUno = new Search(archivoUno, palabrasAIncluir, palabrasAEvitar, palabrasOpcionales);
 
         //---Proceso
 
@@ -42,11 +44,32 @@ public class Main
 
         if(palabrasABuscar > 0)
         {
-            inlistsBuscadas = new IncidentList[palabrasAIncluir.size()];
-            inlistsEvitadas = new IncidentList[palabrasAEvitar.size()];
+            //Considerar las palabras del or también
+            palabrasABuscar = palabrasABuscar + palabrasOpcionales.size();
+
+            //Inicializar invertedIndex!!!
+            invtIndx = new InvertedIndex();
+
+            //Agregar todas las palabras del query de su respectiva LinkedList en una sola linkedList
+            totalPalabras.addAll(palabrasAIncluir);
+            totalPalabras.addAll(palabrasAEvitar);
+            totalPalabras.addAll(palabrasOpcionales);
+
+            //1)COLLECT THE DOCUMENTS TO BE INDEXED
+            archivoUno = new TextFile("archivoUno.txt",System.getProperty("user.dir"));
+            buscadorArchivoUno = new Search(archivoUno, totalPalabras,0);
+
+            archivoDos = new TextFile("archivoDos.txt",System.getProperty("user.dir"));
+            buscadorArchivoDos = new Search(archivoDos,totalPalabras,1);
+
+            //2)Tokenize the text
+            //3)Linguistic Preprocessing
+            //4)Crear un diccionario y una Incident List por cada palabra ingresada en el query que se enceuntre en
+            //al menos alguno de los archivos
+            buscadorArchivoUno.buscarPalabras(invtIndx);
 
             //---Datos de sailda
-            buscadorArchivoUno.buscarPalabras(inlistsBuscadas, inlistsEvitadas);
+            invtIndx.listarInvertedIndex();
 
         }//Fin if 1
         else
