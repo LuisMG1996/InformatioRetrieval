@@ -3,15 +3,25 @@ import java.util.LinkedList;
 /**
  * Created by luisricardo on 17/08/2018.
  */
-public class IncidentList extends LinkedList<Integer> {
+public class IncidentList extends LinkedList<Integer>
+{
+    //Atributos
+    String wordOfDictionary;
 
-    public void agregarCoincidencia(int index)
+
+    //Constructor
+    public IncidentList(String dictionary)
     {
-        this.add(index,1);
+        wordOfDictionary = dictionary;
+
+    }//Fin IncidentList
+
+    public void agregarCoincidencia(int index) {
+
+        this.add(index);
     }//Fin metodo agregar coincidencia
 
-    public void agregarAusencia(int index)
-    {
+    public void agregarAusencia(int index) {
         this.add(index,0);
     }//Fin metodo agregar ausencia.
 

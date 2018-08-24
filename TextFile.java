@@ -13,11 +13,13 @@ public class TextFile
 
     String nombreAbsoluto;
     File archivo;
+    int id;
 
-    public TextFile(String nombre, String direccion)
+    public TextFile(String nombre, String direccion, int id)
     {
         nombreAbsoluto = (direccion+"/"+nombre);
         archivo = new File(nombreAbsoluto);
+        this.id = id;
 
     }//Fin constructor
 
