@@ -12,7 +12,7 @@ public class Main
         LinkedList<String> palabrasAEvitar;
         LinkedList<String> palabrasOpcionales;
 
-        LinkedList<String> totalPalabras;
+        //LinkedList<String> totalPalabras;
         int palabrasABuscar;
 
         //InvertedIndex = Lista de IncidentLists y palabras
@@ -26,12 +26,16 @@ public class Main
         TextFile archivoDos;
         Search buscadorArchivoDos;
 
+        //Archivo Tres
+        TextFile archivoTres;
+        Search buscadorArchivoTres;
+
         //---Datos de entrada
         palabrasAIncluir = new LinkedList<String>();
         palabrasAEvitar = new LinkedList<String>();
         palabrasOpcionales = new LinkedList<String>();
 
-        totalPalabras = new LinkedList<String>();
+        //totalPalabras = new LinkedList<String>();
         palabrasABuscar = 0;
 
         menu(palabrasAIncluir,palabrasAEvitar,palabrasOpcionales);
@@ -51,25 +55,38 @@ public class Main
             invtIndx = new InvertedIndex();
 
             //Agregar todas las palabras del query de su respectiva LinkedList en una sola linkedList
-            totalPalabras.addAll(palabrasAIncluir);
-            totalPalabras.addAll(palabrasAEvitar);
-            totalPalabras.addAll(palabrasOpcionales);
+            //totalPalabras.addAll(palabrasAIncluir);
+            //totalPalabras.addAll(palabrasAEvitar);
+            //totalPalabras.addAll(palabrasOpcionales);
 
             //1)COLLECT THE DOCUMENTS TO BE INDEXED
             archivoUno = new TextFile("archivoUno.txt",System.getProperty("user.dir"));
-            buscadorArchivoUno = new Search(archivoUno, totalPalabras,0);
+            buscadorArchivoUno = new Search(archivoUno, 1);
 
             archivoDos = new TextFile("archivoDos.txt",System.getProperty("user.dir"));
-            buscadorArchivoDos = new Search(archivoDos,totalPalabras,1);
+            buscadorArchivoDos = new Search(archivoDos,2);
+
+            archivoTres = new TextFile("archivoTres.txt", System.getProperty("user.dir"));
+            buscadorArchivoTres = new Search(archivoTres,3);
 
             //2)Tokenize the text
             //3)Linguistic Preprocessing
             //4)Crear un diccionario y una Incident List por cada palabra ingresada en el query que se enceuntre en
             //al menos alguno de los archivos
-            buscadorArchivoUno.buscarPalabras(invtIndx);
+            buscadorArchivoUno.addPalabrasInvertedIndex(invtIndx);
+            buscadorArchivoDos.addPalabrasInvertedIndex(invtIndx);
+            buscadorArchivoTres.addPalabrasInvertedIndex(invtIndx);
 
             //---Datos de sailda
+            //invtIndx.listarInvertedIndex();
+
+            //Ordenar alfabeticamente el InvertedIndex
+            invtIndx.sortInvertedIndex();
+            //Imprimir invertedIndex
             invtIndx.listarInvertedIndex();
+
+            //Obtener resultado Query
+            invtIndx.doQuery(palabrasAIncluir,palabrasOpcionales,palabrasAEvitar,3);
 
         }//Fin if 1
         else

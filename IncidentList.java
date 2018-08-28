@@ -15,14 +15,9 @@ public class IncidentList extends LinkedList<Integer>
 
     }//Fin IncidentList
 
-    public void agregarCoincidencia(int index)
+    public void agregarCoincidencia(int id)
     {
-        this.add(index,1);
+        this.add(id);
     }//Fin metodo agregar coincidencia
-
-    public void agregarAusencia(int index)
-    {
-        this.add(index,0);
-    }//Fin metodo agregar ausencia.
 
 }//Fin Clase IncidentList
