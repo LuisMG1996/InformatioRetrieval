@@ -1,5 +1,10 @@
 import java.util.LinkedList;
 
+/**
+ * Luis Ricardo Montes Gómez 153788
+ * José Francisco Zerón Cabrea 154678
+ */
+
 public class InvertedIndex
 {
     //Atributos
@@ -21,7 +26,7 @@ public class InvertedIndex
     public void listarInvertedIndex()
     {
         System.out.println("\n\tINVERTED INDEX");
-        System.out.println("Palabra \tIncident List");
+        System.out.println("Term \tIncident List");
 
         for(int i = 0; i < numeroActualPalabras; i++)
         {
@@ -129,11 +134,10 @@ public class InvertedIndex
     }//Fin metodo sortInvertedIndex
     //------------------------------------------------------------------------
     //Metodo que dadas las palabras del query imprime que documentos cumplen con las palabras buscadas por el usuario
-    public void doQuery(LinkedList<String> andWords, LinkedList<String> orWords, LinkedList<String> notWords, int numDocs)
+    public void doQuery(LinkedList<String> andWords, LinkedList<String> notWords, LinkedList<Search> docs)
     {
         int invertedMatrix[][];
         LinkedList<Integer> indxAndWords;
-        LinkedList<Integer> indxOrWords;
         LinkedList<Integer> indxNotWords;
 
         LinkedList<Integer> resultadoQuery;
@@ -142,12 +146,21 @@ public class InvertedIndex
         int totalPalabras;
         int numDocsPalabraActual;
         int indxDoc;
-        int globalIndx; //Variable con un indice global para recorrer y asignar elementos de la inveredNatrix
+        //Variable con un indice global para recorrer y asignar elementos de la inveredMatrix que guarda la posicion
+        //de donde se quedo la matrix al acabar de procesar las palabras AND y para continuar desde esa posicion para
+        //las palabras NOT
+        int globalIndx;
+        int numDocs;
 
+        //Bandera que indica si hay palabras and en elquery que nisiquiera estan en el InvertedIndex
+        boolean palabrasAndNotInIndex = true;
 
         indxAndWords = new LinkedList<Integer>();
-        totalPalabras = andWords.size()+orWords.size()+notWords.size();
+        //Total Palabras
+        totalPalabras = andWords.size()+notWords.size();
         globalIndx = 0;
+        numDocs = docs.size();
+
 
         //1)Determinar los indices de las palabras AND y agregarlas a una lista
 
@@ -176,11 +189,14 @@ public class InvertedIndex
         //Para cada palabra en el indice
         for(int i = 0; i < numeroActualPalabras; i++)
         {
-            //Para cada palabra en la lista de orWords del query
+            //Para cada palabra en la lista de notWords del query
             for(int j = 0; j < notWords.size(); j++)
             {
                 //Si una de las palabra en el InvertedIndex es igual a alguna de las palabras de la lista de orWords
                 //,convertida a minusculas, guardar el indice del InvertedIndex en lalista de indxNotWords
+                //---------------
+                //System.out.println(lista.get(i).wordOfDictionary+"=="+notWords.get(j).toLowerCase());
+                //-----------
                 if( lista.get(i).wordOfDictionary.equals( notWords.get(j).toLowerCase() ) )
                 {
                     indxNotWords.add(i);
@@ -190,8 +206,10 @@ public class InvertedIndex
 
         }//Fin for 3
 
-        //----------------------------
+        /*---------------------------------------------
+        System.out.println("------------");
         System.out.println("Mostrar indices AND words:");
+
         for(int i = 0; i < indxAndWords.size();i++)
         {
             System.out.println(indxAndWords.get(i));
@@ -205,13 +223,21 @@ public class InvertedIndex
 
         System.out.println("------------");
 
-        //----------------------------
+        //-------------------------------------------------*/
 
         invertedMatrix = new int[totalPalabras][numDocs+1];
 
+        //Inicializar toda la primera columna (id de palabra) con -1
+        for(int i = 0; i < totalPalabras; i++)
+        {
+            invertedMatrix[i][0] = -1;
+        }//FIn for 1
+        //----------------------------------------------------
+
+        //Ver si el numero de palabras en el query del and son iguales a las palabras and encontradas en el inverted index
         if(indxAndWords.size() == andWords.size() )
         {
-            //Para todas las palabras and
+            //++++++ Para todas las palabras and +++++++
             for (int i = 0; i < indxAndWords.size(); i++)
             {
 
@@ -228,8 +254,8 @@ public class InvertedIndex
                     indxDoc = lista.get(indxAndWords.get(i)).get(k);
 
                     //--------------------------------------------------------------
-                    System.out.println(indxAndWords.get(i)+")Palabra: "+lista.get(indxAndWords.get(i)).wordOfDictionary);
-                    System.out.println("["+i+"]["+indxDoc+"]");
+                    //System.out.println(indxAndWords.get(i)+")Palabra: "+lista.get(indxAndWords.get(i)).wordOfDictionary);
+                    //System.out.println("["+i+"]["+indxDoc+"]");
                     //---------------------------------------------------------------
 
                     invertedMatrix[i][indxDoc] = 1;
@@ -240,94 +266,188 @@ public class InvertedIndex
 
             }//Fin for 1
 
-            //Para todas las palabras Not
-            for(int i = 0; i < indxNotWords.size();i++ )
-            {
-                //En la primer posicion de esa fila; guardar el id de la palabra
-                invertedMatrix[globalIndx][0] = indxNotWords.get(i);
-
-                //Inicializar toda la fila con valor de 1 por default; menos la posicion 0 que contiene el id de la palabra
-                for(int k = 1; k < numDocs+1; k++)
-                {
-                    invertedMatrix[globalIndx][k] = 1;
-                }//FIn for 4
-
-                //------
-                System.out.println("gLOBAL INDEX:"+globalIndx);
-                //-------
-
-                //Poner 0 en la posicion que corresponde al ID del archivo si aparece el Id del archivo dentro del
-                //arreglo que corresponde a la palabra indicada en la lista de indxNotWord
-                numDocsPalabraActual = lista.get(indxNotWords.get(i)).size();
-                for(int j = 0;  j < numDocsPalabraActual; j++)
-                {
-                    //ObtenerElID del documento que si tiene la palabra actual; este ID sirve tambien como el indx
-                    //correspondiente de la columna en la invertedMatrix
-                    indxDoc = lista.get(indxNotWords.get(i)).get(j);
-
-                    //--------------------------------------------------------------
-                    System.out.println(indxNotWords.get(i)+")Palabra: "+lista.get(indxNotWords.get(i)).wordOfDictionary);
-                    System.out.println("["+i+"]["+indxDoc+"]");
-                    //---------------------------------------------------------------
-
-                    invertedMatrix[globalIndx][indxDoc] = 0;
-
-                }//Fin for 5
-
-                globalIndx++;
-
-            }//Fin for 3
-
-            resultadoQuery = new LinkedList<Integer>();
-
-            //Si al multiplicar los elementos de una misma columna se obtiene 1; el documento cuyo id corresponde a
-            //la posicion de esa columna cumple con el Query; de lo contrario NO CUMPLE CON EL QUERY
-            for(int i = 1; i < numDocs+1; i++)
-            {
-                //Set resultadoColumna como 1 para cada Documento/Columna; porque si anterior documento NO CUMPLE
-                //y queda en 0, si se deja en 0 todos los documentos posteriores automaticamente no cumpliran condicion
-                resultadoColumna = 1;
-
-                for (int j = 0; j < totalPalabras; j++)
-                {
-                    resultadoColumna = resultadoColumna*invertedMatrix[j][i];
-
-                }//Fin for 2
-
-                if(resultadoColumna == 1)
-                {
-                    System.out.println("El documento N° "+i+" cumple con el query");
-                    resultadoQuery.add(i);
-
-                }//Fin if
-
-            }//Fin for 1
-
         }//Fin if 1
         else
         {
             //Hay palabras del query que no estan en el InvertedIndex por lo tanto no va haber ningun documento
             //que cumpla con el query
             System.out.println("RESULTADO QUERY:\nNo hay ningun documento que satisfaga la consulta indicada!");
+            palabrasAndNotInIndex = false;
 
         }//Fin else 1
 
-        //------------------
-        for(int i = 0; i < totalPalabras; i++ )
+        //+++++++++++++++++++++++++++++ Logica Para todas las palabras Not del query +++++++++++++++++++++++++++++++++++
+
+        //Inicializar toda la fila con valor de 1 por default; menos la posicion 0 que contiene el id de la palabra
+        //Esto previene que palabras No existentes en los documentos puedan resultar un query erroneo.
+
+        for(int j = globalIndx; j < totalPalabras; j++)
         {
-            for(int j = 0;  j < numDocs+1; j++)
+            for (int k = 1; k < numDocs + 1; k++)
             {
-                System.out.print(invertedMatrix[i][j]+" ");
+                invertedMatrix[j][k] = 1;
+            }//FIn for k
 
-            }//Fin for 2
+        }//Fin for j
 
-            System.out.println();
+        //----------------
+        //System.out.println("Numero not words del query encontradas en el invertedIndex:"+indxNotWords.size());
+        //----------------
+        //Para cada palabra Not del query que tambien este dentro del InvertedIndex:
+        for(int i = 0; i < indxNotWords.size();i++ )
+        {
+            //En la primer posicion de esa fila; guardar el id de la palabra
+            invertedMatrix[globalIndx][0] = indxNotWords.get(i);
 
-        }//Fin for 1
+            //------
+            //System.out.println("gLOBAL INDEX:"+globalIndx);
+            //-------
 
-        //------------------
+            //Poner 0 en la posicion que corresponde al ID del archivo si aparece el Id del archivo dentro del
+            //arreglo que corresponde a la palabra indicada en la lista de indxNotWord
+            numDocsPalabraActual = lista.get(indxNotWords.get(i)).size();
+            for(int j = 0;  j < numDocsPalabraActual; j++)
+            {
+                //ObtenerElID del documento que si tiene la palabra actual; este ID sirve tambien como el indx
+                //correspondiente de la columna en la invertedMatrix
+                indxDoc = lista.get(indxNotWords.get(i)).get(j);
+
+                //--------------------------------------------------------------
+                //System.out.println(indxNotWords.get(i)+")Palabra: "+lista.get(indxNotWords.get(i)).wordOfDictionary);
+                //System.out.println("["+i+"]["+indxDoc+"]");
+                //---------------------------------------------------------------
+
+                invertedMatrix[globalIndx][indxDoc] = 0;
+
+            }//Fin for 5
+
+            globalIndx++;
+
+        }//Fin for 3
+
+        //+++++++++++++++++ PROCESAMIENTO DE RESULTADO: Determinar que docs si contienen el query ++++++++++++++++++++++
+        System.out.print("Resultado del query: ");
+        displayQuery(andWords, notWords);
+
+        //Verificar que todas las plabras and esten en el Index
+        if(palabrasAndNotInIndex)
+        {
+            resultadoQuery = new LinkedList<Integer>();
+
+            //Si al multiplicar los elementos de una misma columna se obtiene 1; el documento cuyo id corresponde a
+            //la posicion de esa columna cumple con el Query; de lo contrario NO CUMPLE CON EL QUERY
+            for (int i = 1; i < numDocs + 1; i++) {
+                //Set resultadoColumna como 1 para cada Documento/Columna; porque si anterior documento NO CUMPLE
+                //y queda en 0, si se deja en 0 todos los documentos posteriores automaticamente no cumpliran condicion
+                resultadoColumna = 1;
+
+                for (int j = 0; j < totalPalabras; j++) {
+                    resultadoColumna = resultadoColumna * invertedMatrix[j][i];
+
+                }//Fin for 2
+
+                if (resultadoColumna == 1) {
+
+                    //System.out.println("El documento: "+docs.get(i).archivo.archivo.getName()+" cumple con el query");
+                    System.out.print("El documento N° " + i + ": ");
+
+                    //Encontrar el nombre del archivo
+                    for (int j = 0; j < docs.size(); j++) {
+                        //Si el id del documento actual de la linked list docs es igual al id que esta en variable i
+                        //mprimir nuombre
+                        if (docs.get(j).id == i) {
+                            System.out.print(docs.get(j).archivo.archivo.getName());
+
+                        }//Fin if 3
+
+                    }//Fin for 6
+                    System.out.println(" satisface el query");
+
+                    resultadoQuery.add(i);
+
+                }//Fin if 2
+
+            }//Fin for 1
+
+            /*------ Impirmir la logica de la inverted Matrix usada para ver como se determino el resultado ----------------
+            for (int i = 0; i < totalPalabras; i++) {
+                for (int j = 0; j < numDocs + 1; j++) {
+                    System.out.print(invertedMatrix[i][j] + " ");
+
+                }//Fin for 2
+
+                System.out.println();
+
+            }//Fin for 1*/
+            //----------------------------------------------------------------------------------------------------------
+
+        }//Fin verificar que todas las palabras del and esten en el index
 
     }//Fin metodo doQuery
+    //------------------------------------------------------------------------------------------------------------------
+    //Metodo que imprime el query en forma de expresion logica
+    public void displayQuery(LinkedList<String> ands, LinkedList<String> nots)
+    {
+        //Ver si hay ands
+        if(ands.size() > 0)
+        {
+            //SI HAY ANDS
+            System.out.print("(");
+
+            for(int i = 0; i < ands.size(); i++)
+            {
+                System.out.print(ands.get(i));
+
+                //Si no es la ultima palabra del query
+                if( i != ands.size()-1)
+                {
+                    System.out.print("&");
+                }//Fin if 1.2
+
+            }//Fin for 1
+
+            System.out.print(") ");
+
+        }//Fin if 1
+        else
+        {
+            //No hay ands
+
+        }//Fin else 1
+
+        //Ver si hay nots
+        if(nots.size() > 0)
+        {
+            //SI HAY NOTS
+            System.out.print("& ¬(");
+
+            for(int i = 0; i < nots.size(); i++)
+            {
+                System.out.print(nots.get(i));
+
+                //Si no es la ultima palabra del query
+                if( i != nots.size()-1)
+                {
+                    System.out.print("&");
+                }//Fin if 1.2
+
+            }//Fin for 1
+
+            System.out.print(") ");
+
+        }//Fin if 2
+        else
+        {
+            //NO HAY NOTS
+
+        }//Fin else 2
+
+        //Fin de linea
+        System.out.println();
+        System.out.println();
+
+    }//Fin metodo display Query
+    //------------------------------------------------------------------------------------------------------------------
 
 
 }//Fin clase Inverted Index

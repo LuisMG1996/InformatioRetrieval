@@ -1,6 +1,11 @@
 import java.util.LinkedList;
 import java.util.Scanner;
 
+/**
+ * Luis Ricardo Montes Gómez 153788
+ * José Francisco Zerón Cabrea 154678
+ */
+
 public class Main
 {
 
@@ -10,13 +15,15 @@ public class Main
         //---Declaracion de vairables
         LinkedList<String> palabrasAIncluir;
         LinkedList<String> palabrasAEvitar;
-        LinkedList<String> palabrasOpcionales;
 
         //LinkedList<String> totalPalabras;
         int palabrasABuscar;
 
         //InvertedIndex = Lista de IncidentLists y palabras
         InvertedIndex invtIndx;
+
+        //LinkedList de Buscadores de archivos
+        LinkedList<Search> archivos;
 
         //Archivo uno
         TextFile archivoUno;
@@ -33,12 +40,10 @@ public class Main
         //---Datos de entrada
         palabrasAIncluir = new LinkedList<String>();
         palabrasAEvitar = new LinkedList<String>();
-        palabrasOpcionales = new LinkedList<String>();
 
-        //totalPalabras = new LinkedList<String>();
-        palabrasABuscar = 0;
+        archivos = new LinkedList<Search>();
 
-        menu(palabrasAIncluir,palabrasAEvitar,palabrasOpcionales);
+        menu(palabrasAIncluir,palabrasAEvitar);
 
         //---Proceso
 
@@ -48,29 +53,25 @@ public class Main
 
         if(palabrasABuscar > 0)
         {
-            //Considerar las palabras del or también
-            palabrasABuscar = palabrasABuscar + palabrasOpcionales.size();
-
             //Inicializar invertedIndex!!!
             invtIndx = new InvertedIndex();
-
-            //Agregar todas las palabras del query de su respectiva LinkedList en una sola linkedList
-            //totalPalabras.addAll(palabrasAIncluir);
-            //totalPalabras.addAll(palabrasAEvitar);
-            //totalPalabras.addAll(palabrasOpcionales);
 
             //1)COLLECT THE DOCUMENTS TO BE INDEXED
             archivoUno = new TextFile("archivoUno.txt",System.getProperty("user.dir"));
             buscadorArchivoUno = new Search(archivoUno, 1);
+            archivos.add(buscadorArchivoUno);
 
             archivoDos = new TextFile("archivoDos.txt",System.getProperty("user.dir"));
             buscadorArchivoDos = new Search(archivoDos,2);
+            archivos.add(buscadorArchivoDos);
 
             archivoTres = new TextFile("archivoTres.txt", System.getProperty("user.dir"));
             buscadorArchivoTres = new Search(archivoTres,3);
+            archivos.add(buscadorArchivoTres);
 
+            //Para cada archivo:
             //2)Tokenize the text
-            //3)Linguistic Preprocessing
+            //3)Linguistic Preprocessing (convertir a lower case)
             //4)Crear un diccionario y una Incident List por cada palabra ingresada en el query que se enceuntre en
             //al menos alguno de los archivos
             buscadorArchivoUno.addPalabrasInvertedIndex(invtIndx);
@@ -86,7 +87,7 @@ public class Main
             invtIndx.listarInvertedIndex();
 
             //Obtener resultado Query
-            invtIndx.doQuery(palabrasAIncluir,palabrasOpcionales,palabrasAEvitar,3);
+            invtIndx.doQuery(palabrasAIncluir,palabrasAEvitar,archivos);
 
         }//Fin if 1
         else
@@ -95,15 +96,16 @@ public class Main
                     " no deba de estar dentro de los archivos!\n");
 
         }//Fin else 1
+
         //---Fin del programa
-        System.out.println("Fin del programa V3.1");
+        System.out.println("Fin del programa V4.0");
 
     }//Fin metodo main
 
     //------------------------------------------------------------------------------------------
     //Metodo que despliega menu indicando las palabras que se quieren buscar en los archivos; cuales no se quieren que
     //se incluyan; y palabras que pueden estar o no estar
-    public static void menu(LinkedList<String> incluir, LinkedList<String> evitar, LinkedList<String> opcionales)
+    public static void menu(LinkedList<String> incluir, LinkedList<String> evitar)
     {
         int inext = -1;
         Scanner bucky = new Scanner(System.in);
@@ -115,7 +117,6 @@ public class Main
             System.out.println("\n\tINCIDENT LIST SEARCHER\n");
             System.out.println("1) Agregar palabra que debe incluir el documento"); //AND
             System.out.println("2) Agregar palabra que NO deba incluir el documento"); //NOT
-            System.out.println("3) Agregar palabra que puede o no incluir el documento"); //OR
             System.out.println("0) Iniciar busqueda de archivos");
             System.out.print("Opcion: ");
 
@@ -127,21 +128,15 @@ public class Main
                     break;
 
                 case 1:
-                    System.out.print("Palabra que debe estar: ");
+                    System.out.print("Palabra que debe estar (AND): ");
                     newWord = wendell.nextLine();
                     incluir.add(newWord);
                     break;
 
                 case 2:
-                    System.out.print("Palabra que NO debe estar: ");
+                    System.out.print("Palabra que NO debe estar (NOT): ");
                     newWord = wendell.nextLine();
                     evitar.add(newWord);
-                    break;
-
-                case 3:
-                    System.out.print("Palabra que puede estar o no: ");
-                    newWord = wendell.nextLine();
-                    opcionales.add(newWord);
                     break;
 
                 default:

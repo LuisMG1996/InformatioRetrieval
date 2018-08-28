@@ -1,7 +1,8 @@
 import java.io.*;
 
 /**
- * Created by luisricardo on 17/08/2018.
+ * Luis Ricardo Montes Gómez 153788
+ * José Francisco Zerón Cabrea 154678
  */
 public class TextFile
 {
